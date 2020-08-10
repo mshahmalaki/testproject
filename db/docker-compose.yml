@@ -1,0 +1,14 @@
+version: "3.7"
+# Database for tests
+services:
+    acct:
+        image: mariadb:10.1
+        env_file: ./acct.env
+        ports:
+            - "13306:3306"
+        
+    auth:
+        image: mariadb:10.1
+        env_file: ./auth.env
+        ports:
+            - "23306:3306"

@@ -1,0 +1,4 @@
+FLASK_APP=auth
+FLASK_ENV=development
+FLASK_DEBUG=1
+FLASK_Testing=1

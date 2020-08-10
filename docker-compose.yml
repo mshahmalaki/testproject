@@ -1,0 +1,96 @@
+version: "3.7"
+
+services:
+    reverse_proxy:
+        image: nginx:alpine
+        restart: unless-stopped
+        depends_on:
+            - acct
+            - auth
+        ports:
+            - "80:80"
+            - "8080:8080"
+        volumes:
+            - "./nginx/conf.d/:/etc/nginx/conf.d/"
+        networks:
+            - apps_network
+        deploy:
+            placement:
+                constraints:
+                    - node.role==worker
+            replicas: 3
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: any
+
+    acct:
+        image: 127.0.0.1:5000/acct
+        build:
+            context: ./acct
+            dockerfile: Dockerfile
+        depends_on:
+            - acct_db
+        networks:
+            - acct_back
+            - apps_network
+        deploy:
+            placement:
+                constraints:
+                    - node.role==worker
+            replicas: 3
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: any
+
+    acct_db:
+        image: mariadb:10.1
+        volumes: 
+            - "acct_db:/var/lib/mysql"
+        env_file: ./db/acct.env
+        networks:
+            - acct_back
+
+    auth:
+        image: 127.0.0.1:5000/auth
+        build: 
+            context: ./auth
+            dockerfile: Dockerfile
+        depends_on:
+            - auth_db
+        networks:
+            - auth_back
+            - apps_network
+        deploy:
+            placement:
+                constraints:
+                    - node.role==worker
+            replicas: 3
+            update_config:
+                parallelism: 1
+                delay: 10s
+            restart_policy:
+                condition: any
+
+    auth_db:
+        image: mariadb:10.1
+        volumes:
+            - "auth_db:/var/lib/mysql"
+        env_file: ./db/auth.env
+        networks:
+            - auth_back
+
+volumes:
+    acct_db:
+    auth_db:
+
+networks:
+    acct_back:
+        driver: overlay
+    auth_back:
+        driver: overlay
+    apps_network:
+        driver: overlay
