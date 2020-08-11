@@ -19,6 +19,7 @@ setup(
         "flask-migrate",
         "flask-marshmallow",
         "flask-restx",
+        "flask-jwt-extended",
         "marshmallow-sqlalchemy",
         "pymysql",
         "pymysql[rsa]",
