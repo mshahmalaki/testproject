@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, urandom
 
 
 class Config:
@@ -9,4 +9,5 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ACCT_SERVICE_URL = environ.get("ACCT_SERVICE_URL", None)
     # TODO Change this!
-    JWT_SECRET_KEY = 'super-secret'
+    # JWT_SECRET_KEY = 'super-secret'
+    JWT_SECRET_KEY = str(urandom(24))
